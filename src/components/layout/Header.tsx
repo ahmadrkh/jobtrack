@@ -58,6 +58,25 @@ function exportCSV(applications: Application[]) {
 export function Header({ total, onCreated, applications }: HeaderProps) {
   const [open, setOpen] = useState(false)
 
+  // ── Dark mode toggle ──────────────────────────────────────────────────────
+  // We read the initial state from the <html> class (set by the anti-flash
+  // script in layout.tsx) so the icon matches the actual current theme.
+  const [dark, setDark] = useState(false)
+
+  useEffect(() => {
+    // Sync state with whatever the anti-flash script set on <html>
+    setDark(document.documentElement.classList.contains('dark'))
+  }, [])
+
+  function toggleDark() {
+    const next = !dark
+    setDark(next)
+    // Toggle the `dark` class on <html> — Tailwind reads this
+    document.documentElement.classList.toggle('dark', next)
+    // Persist the preference so the anti-flash script can read it on next load
+    localStorage.setItem('theme', next ? 'dark' : 'light')
+  }
+
   return (
     <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
       {/* Logo */}
@@ -66,8 +85,10 @@ export function Header({ total, onCreated, applications }: HeaderProps) {
           <Briefcase className="w-4 h-4 text-white" />
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-slate-900">JobTrack</h1>
-          <p className="text-xs text-slate-500">{total} application{total !== 1 ? 's' : ''} tracked</p>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">JobTrack</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {total} application{total !== 1 ? 's' : ''} tracked
+          </p>
         </div>
       </div>
 

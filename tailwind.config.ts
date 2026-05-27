@@ -6,6 +6,9 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  // 'class' strategy: dark mode activates when the `dark` class is on <html>.
+  // This lets us toggle it with a button instead of relying on the OS setting.
+  darkMode: 'class',
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
