@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createApplicationSchema, CreateApplicationInput } from '@/lib/validations'
@@ -10,10 +11,16 @@ interface ApplicationFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: (app: Application) => void
-  defaultValues?: Partial<CreateApplicationInput>
+  // When editApp is provided the form switches to edit mode:
+  // - title becomes "Edit Application"
+  // - fields are pre-filled with the current values
+  // - submit fires PATCH instead of POST
+  editApp?: Application
 }
 
-export function ApplicationForm({ open, onOpenChange, onSuccess, defaultValues }: ApplicationFormProps) {
+export function ApplicationForm({ open, onOpenChange, onSuccess, editApp }: ApplicationFormProps) {
+  const isEdit = Boolean(editApp)
+
   const {
     register,
     handleSubmit,
@@ -21,19 +28,52 @@ export function ApplicationForm({ open, onOpenChange, onSuccess, defaultValues }
     formState: { errors, isSubmitting },
   } = useForm<CreateApplicationInput>({
     resolver: zodResolver(createApplicationSchema),
-    defaultValues: { status: 'WISHLIST', ...defaultValues },
+    defaultValues: { status: 'WISHLIST' },
   })
 
+  // react-hook-form's defaultValues only apply on first render.
+  // When the user opens the edit modal for a *different* card we need
+  // to imperatively reset the form with the new card's values.
+  // useEffect with [editApp] runs whenever editApp changes.
+  useEffect(() => {
+    if (editApp) {
+      reset({
+        company:  editApp.company,
+        role:     editApp.role,
+        status:   editApp.status as CreateApplicationInput['status'],
+        jobUrl:   editApp.jobUrl   ?? '',
+        location: editApp.location ?? '',
+        salary:   editApp.salary   ?? '',
+        notes:    editApp.notes    ?? '',
+      })
+    } else {
+      reset({ status: 'WISHLIST' })
+    }
+  }, [editApp, reset])
+
   async function onSubmit(data: CreateApplicationInput) {
-    const res = await fetch('/api/applications', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    })
-    if (!res.ok) return
-    const app: Application = await res.json()
-    onSuccess(app)
-    reset()
+    if (isEdit && editApp) {
+      // PATCH — update the existing application
+      const res = await fetch(`/api/applications/${editApp.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) return
+      const updated: Application = await res.json()
+      onSuccess(updated)
+    } else {
+      // POST — create a new application
+      const res = await fetch('/api/applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) return
+      const app: Application = await res.json()
+      onSuccess(app)
+      reset()
+    }
   }
 
   if (!open) return null
@@ -41,9 +81,11 @@ export function ApplicationForm({ open, onOpenChange, onSuccess, defaultValues }
   return (
     // Backdrop
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-semibold text-slate-900">Add Application</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            {isEdit ? 'Edit Application' : 'Add Application'}
+          </h2>
           <button onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
         </div>
 
@@ -55,16 +97,16 @@ export function ApplicationForm({ open, onOpenChange, onSuccess, defaultValues }
               <input
                 {...register('company')}
                 placeholder="e.g. Digikala"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.company && <p className="text-red-500 text-xs mt-1">{errors.company.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Role *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role *</label>
               <input
                 {...register('role')}
                 placeholder="e.g. Frontend Developer"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>}
             </div>
@@ -139,7 +181,7 @@ export function ApplicationForm({ open, onOpenChange, onSuccess, defaultValues }
               disabled={isSubmitting}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors"
             >
-              {isSubmitting ? 'Saving…' : 'Save Application'}
+              {isSubmitting ? 'Saving…' : isEdit ? 'Save Changes' : 'Save Application'}
             </button>
           </div>
         </form>

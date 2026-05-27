@@ -2,16 +2,17 @@
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { ExternalLink, MapPin, Banknote, Trash2 } from 'lucide-react'
+import { ExternalLink, MapPin, Banknote, Trash2, Pencil } from 'lucide-react'
 import { Application } from '@/types'
 import { formatDate } from '@/lib/utils'
 
 interface JobCardProps {
   application: Application
   onDelete: (id: string) => void
+  onEdit: (app: Application) => void
 }
 
-export function JobCard({ application, onDelete }: JobCardProps) {
+export function JobCard({ application, onDelete, onEdit }: JobCardProps) {
   // dnd-kit hook — gives us drag handle props and transform styles
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: application.id })
@@ -32,23 +33,33 @@ export function JobCard({ application, onDelete }: JobCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-lg border border-slate-200 p-3 shadow-sm cursor-grab active:cursor-grabbing group"
+      className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-3 shadow-sm cursor-grab active:cursor-grabbing group transition-colors"
       {...attributes}
       {...listeners}
     >
       {/* Company + delete */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="font-semibold text-sm text-slate-900 truncate">{application.company}</p>
-          <p className="text-xs text-slate-500 truncate">{application.role}</p>
+          <p className="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">{application.company}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{application.role}</p>
         </div>
-        <button
-          onClick={handleDelete}
-          className="opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
-          aria-label="Delete application"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+        {/* Edit + Delete — only visible on hover via group-hover */}
+        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 flex-shrink-0 transition-all">
+          <button
+            onClick={(e) => { e.stopPropagation(); onEdit(application) }}
+            className="p-1 rounded text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-all"
+            aria-label="Edit application"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={handleDelete}
+            className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+            aria-label="Delete application"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* Meta info */}
