@@ -1,0 +1,24 @@
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Application {
+  id        String    @id @default(cuid())
+  company   String
+  role      String
+  status    String    @default("WISHLIST")  // SQLite doesn't support enums — stored as String
+  jobUrl    String?
+  location  String?
+  salary    String?
+  notes     String?
+  appliedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
