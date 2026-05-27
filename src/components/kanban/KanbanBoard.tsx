@@ -21,6 +21,7 @@ import { Application } from '@/types'
 import { KANBAN_COLUMNS } from '@/types'
 import { KanbanColumn } from './KanbanColumn'
 import { JobCard } from './JobCard'
+import { ApplicationForm } from '@/components/forms/ApplicationForm'
 
 interface KanbanBoardProps {
   applications: Application[]
@@ -36,6 +37,9 @@ export function KanbanBoard({ applications, onChange, onDelete }: KanbanBoardPro
   // activeId tracks which card is currently being dragged.
   // We need this to render the DragOverlay (the floating ghost card).
   const [activeId, setActiveId] = useState<string | null>(null)
+  // editingApp holds the card currently being edited.
+  // null means the edit modal is closed.
+  const [editingApp, setEditingApp] = useState<Application | null>(null)
 
   // Sensors define HOW drag is initiated. PointerSensor handles both
   // mouse and touch. activationConstraint.distance means: "don't start
@@ -75,7 +79,24 @@ export function KanbanBoard({ applications, onChange, onDelete }: KanbanBoardPro
     if (!over) return
 
     const cardId = String(active.id)
-    const newStatus = String(over.id)
+    const overId  = String(over.id)
+
+    // THE BUG FIX:
+    // over.id can be EITHER a column ID (e.g. "APPLIED") OR a card ID
+    // (e.g. "clxyz123") depending on what the pointer is hovering over
+    // when the user releases the mouse.
+    //
+    // - Dropped on empty column space → over.id = column ID  ✓
+    // - Dropped on top of another card → over.id = that card's ID  ✗
+    //   In this case we need to look up which column the target card
+    //   lives in and use THAT as the new status.
+    //
+    // Without this fix, the card's status gets set to a random cuid()
+    // string, no column matches it, and the card silently disappears.
+    const isColumnId = KANBAN_COLUMNS.some(col => col.id === overId)
+    const newStatus  = isColumnId
+      ? overId
+      : (applications.find(a => a.id === overId)?.status ?? overId)
 
     // Find the card that was dragged
     const card = applications.find(a => a.id === cardId)
@@ -117,6 +138,7 @@ export function KanbanBoard({ applications, onChange, onDelete }: KanbanBoardPro
             column={column}
             applications={getColumnApplications(column.id)}
             onDelete={onDelete}
+            onEdit={setEditingApp}
           />
         ))}
       </div>
@@ -130,11 +152,27 @@ export function KanbanBoard({ applications, onChange, onDelete }: KanbanBoardPro
           <div className="rotate-2 scale-105 opacity-90">
             <JobCard
               application={activeApplication}
-              onDelete={() => {}} // No-op: can't delete from the overlay
+              onDelete={() => {}}  // No-op: can't delete from the overlay
+              onEdit={() => {}}    // No-op: can't edit from the overlay
             />
           </div>
         ) : null}
       </DragOverlay>
+
+      {/* Edit modal — rendered outside the column list so it's not
+          clipped by overflow:hidden. Reuses ApplicationForm with
+          editApp prop to switch it into edit mode. */}
+      <ApplicationForm
+        open={editingApp !== null}
+        onOpenChange={(open) => { if (!open) setEditingApp(null) }}
+        editApp={editingApp ?? undefined}
+        onSuccess={(updated) => {
+          // Swap the old card with the updated one in the applications array,
+          // then tell the parent page about the new state.
+          onChange(applications.map(a => a.id === updated.id ? updated : a))
+          setEditingApp(null)
+        }}
+      />
     </DndContext>
   )
 }
