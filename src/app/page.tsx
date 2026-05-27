@@ -53,7 +53,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
-      <Header total={applications.length} onCreated={handleCreated} />
+      <Header total={applications.length} onCreated={handleCreated} applications={applications} />
 
       <main className="flex-1 pt-4">
         {loading ? (
