@@ -62,7 +62,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
-      <Header total={applications.length} onCreated={handleCreated} />
+      <Header total={applications.length} onCreated={handleCreated} applications={applications} />
 
       <FilterBar
         search={search}
