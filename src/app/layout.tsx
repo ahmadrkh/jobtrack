@@ -5,8 +5,11 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'JobTrack',
-  description: 'Track your job applications with a Kanban board',
+  title: {
+    default: 'JobTrack',
+    template: '%s · JobTrack',   // Pages can set their own title; this wraps it
+  },
+  description: 'Track your job applications across every stage of the hiring pipeline.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
