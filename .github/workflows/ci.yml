@@ -62,7 +62,9 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          DATABASE_URL: file:./dev.db
+          # Dummy PostgreSQL URL — CI only needs prisma generate (no real connection).
+          # The real DATABASE_URL lives in Vercel's environment variables.
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/jobtrack
 
   # ─── Job 2: Lint ─────────────────────────────────────────────────────────
   lint:
