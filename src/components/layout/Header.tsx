@@ -7,7 +7,7 @@
 //   - Added "Export CSV" button next to "Add Application"
 
 import { Briefcase, Plus, Download } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ApplicationForm } from '@/components/forms/ApplicationForm'
 import { Application } from '@/types'
 
