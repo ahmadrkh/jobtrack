@@ -14,8 +14,29 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-slate-50 min-h-screen`}>
+    <html lang="en" suppressHydrationWarning>
+      {/*
+        Anti-flash script: runs synchronously BEFORE React hydrates,
+        so the correct theme class is applied before the first paint.
+        Without this, users would briefly see the wrong theme (a "flash").
+        suppressHydrationWarning on <html> is required because this script
+        mutates the className before React expects to control it.
+      */}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('theme')
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark')
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.className} bg-slate-100 dark:bg-slate-900 min-h-screen transition-colors duration-200`}>
         {children}
       </body>
     </html>

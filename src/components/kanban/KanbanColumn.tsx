@@ -70,8 +70,8 @@ export function KanbanColumn({ column, applications, onDelete, onEdit }: KanbanC
           {/* Empty state — gives the column visual height when empty
               so the user has somewhere to drop cards */}
           {applications.length === 0 && (
-            <div className="flex items-center justify-center h-20 border-2 border-dashed border-slate-200 rounded-lg">
-              <p className="text-xs text-slate-400">Drop here</p>
+            <div className="flex items-center justify-center h-20 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg">
+              <p className="text-xs text-slate-400 dark:text-slate-500">Drop here</p>
             </div>
           )}
         </div>

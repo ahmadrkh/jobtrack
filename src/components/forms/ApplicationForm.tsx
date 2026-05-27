@@ -81,9 +81,9 @@ export function ApplicationForm({ open, onOpenChange, onSuccess, editApp }: Appl
   return (
     // Backdrop
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             {isEdit ? 'Edit Application' : 'Add Application'}
           </h2>
           <button onClick={() => onOpenChange(false)} className="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
@@ -97,16 +97,16 @@ export function ApplicationForm({ open, onOpenChange, onSuccess, editApp }: Appl
               <input
                 {...register('company')}
                 placeholder="e.g. Digikala"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.company && <p className="text-red-500 text-xs mt-1">{errors.company.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Role *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role *</label>
               <input
                 {...register('role')}
                 placeholder="e.g. Frontend Developer"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>}
             </div>

@@ -33,15 +33,15 @@ export function JobCard({ application, onDelete, onEdit }: JobCardProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-lg border border-slate-200 p-3 shadow-sm cursor-grab active:cursor-grabbing group"
+      className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-3 shadow-sm cursor-grab active:cursor-grabbing group transition-colors"
       {...attributes}
       {...listeners}
     >
       {/* Company + delete */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="font-semibold text-sm text-slate-900 truncate">{application.company}</p>
-          <p className="text-xs text-slate-500 truncate">{application.role}</p>
+          <p className="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">{application.company}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{application.role}</p>
         </div>
         {/* Edit + Delete — only visible on hover via group-hover */}
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 flex-shrink-0 transition-all">
