@@ -37,13 +37,11 @@ jobs:
           cache: 'npm'
 
       # Step 3: Install dependencies
-      # `npm ci` is stricter than `npm install`:
-      #   - Requires package-lock.json to exist
-      #   - Fails if lock file doesn't match package.json
-      #   - Never updates the lock file
-      # This guarantees reproducible builds.
+      # Using `npm install` here because package-lock.json may not be
+      # committed yet. Once the lock file is committed and in sync,
+      # switch this back to `npm ci` for reproducible, strict builds.
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       # Step 4: Generate Prisma client
       # Prisma generates TypeScript types from schema.prisma.
@@ -77,6 +75,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - name: Run ESLint
         run: npm run lint
