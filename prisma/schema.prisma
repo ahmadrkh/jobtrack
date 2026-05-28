@@ -1,3 +1,4 @@
+// This is your Prisma schema file.
 // Learn more: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -5,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"   // Switched from sqlite → postgresql for Vercel/Neon deployment
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -13,7 +14,7 @@ model Application {
   id        String    @id @default(cuid())
   company   String
   role      String
-  status    String    @default("WISHLIST")  // SQLite doesn't support enums — stored as String
+  status    String    @default("WISHLIST")
   jobUrl    String?
   location  String?
   salary    String?
@@ -21,4 +22,16 @@ model Application {
   appliedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  events    Event[]
+}
+
+model Event {
+  id            String      @id @default(cuid())
+  applicationId String
+  type          String      // 'STATUS_CHANGE' | 'NOTE' | 'CREATED'
+  content       String
+  createdAt     DateTime    @default(now())
+
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 }
