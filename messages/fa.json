@@ -1,0 +1,162 @@
+{
+  "common": {
+    "appName": "جاب‌تِرک",
+    "loading": "در حال بارگذاری…",
+    "error": "مشکلی پیش آمد",
+    "retry": "تلاش مجدد",
+    "cancel": "لغو",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "close": "بستن",
+    "confirm": "تأیید",
+    "yes": "بله",
+    "no": "خیر",
+    "optional": "اختیاری",
+    "noData": "هنوز داده‌ای وجود ندارد"
+  },
+
+  "nav": {
+    "board": "تابلو",
+    "stats": "آمار"
+  },
+
+  "header": {
+    "addJob": "افزودن شغل",
+    "export": "خروجی",
+    "exportAriaLabel": "خروجی CSV",
+    "signIn": "ورود با GitHub",
+    "signOut": "خروج از حساب",
+    "account": "حساب کاربری"
+  },
+
+  "filter": {
+    "searchPlaceholder": "جستجوی شرکت یا عنوان شغلی…",
+    "clearSearch": "پاک کردن جستجو",
+    "allStatuses": "همه",
+    "showing": "{filtered} از {total}"
+  },
+
+  "kanban": {
+    "emptyColumn": "هنوز درخواستی در این ستون وجود ندارد",
+    "dragHint": "برای جابه‌جایی بکشید",
+    "moveToLabel": "انتقال به…"
+  },
+
+  "jobCard": {
+    "appliedOn": "ثبت درخواست: {date}",
+    "followUpDue": "یادآوری پیگیری: {date}",
+    "followUpOverdue": "پیگیری عقب‌افتاده از {date}",
+    "followUpSoon": "پیگیری تا {days} روز دیگر",
+    "viewJob": "مشاهده آگهی",
+    "editJob": "ویرایش",
+    "deleteJob": "حذف",
+    "deleteConfirm": "این درخواست حذف شود؟",
+    "deleteDescription": "این عمل غیرقابل بازگشت است و تمام تاریخچه آن نیز حذف می‌شود.",
+    "salary": "حقوق",
+    "location": "موقعیت مکانی",
+    "notes": "یادداشت‌ها",
+    "showHistory": "نمایش تاریخچه",
+    "hideHistory": "پنهان کردن تاریخچه"
+  },
+
+  "addJobDialog": {
+    "titleAdd": "افزودن درخواست شغلی",
+    "titleEdit": "ویرایش درخواست شغلی",
+    "company": "شرکت",
+    "companyPlaceholder": "مثلاً: آکمه کورپ",
+    "role": "عنوان شغلی",
+    "rolePlaceholder": "مثلاً: مهندس نرم‌افزار",
+    "status": "وضعیت",
+    "jobUrl": "لینک آگهی",
+    "jobUrlPlaceholder": "https://…",
+    "location": "موقعیت",
+    "locationPlaceholder": "مثلاً: دورکاری، تهران، برلین",
+    "salary": "حقوق / بازه",
+    "salaryPlaceholder": "مثلاً: ۸۰–۱۰۰ میلیون تومان",
+    "appliedAt": "تاریخ ثبت درخواست",
+    "followUpAt": "یادآوری پیگیری",
+    "notes": "یادداشت",
+    "notesPlaceholder": "نام مسئول استخدام، برداشت‌ها، مراحل بعدی…",
+    "submitAdd": "افزودن درخواست",
+    "submitEdit": "ذخیره تغییرات",
+    "submitting": "در حال ذخیره…"
+  },
+
+  "status": {
+    "WISHLIST": "لیست آرزو",
+    "APPLIED": "ثبت درخواست",
+    "PHONE_SCREEN": "مصاحبه تلفنی",
+    "INTERVIEW": "مصاحبه",
+    "OFFER": "پیشنهاد",
+    "REJECTED": "رد شده"
+  },
+
+  "events": {
+    "CREATED": "درخواست ثبت شد",
+    "STATUS_CHANGE": "وضعیت به «{status}» تغییر کرد",
+    "NOTE": "یادداشت",
+    "empty": "هنوز تاریخچه‌ای ثبت نشده است"
+  },
+
+  "stats": {
+    "pageTitle": "آمار",
+    "totalApplications": "کل درخواست‌ها",
+    "activeApplications": "فعال",
+    "offers": "پیشنهادها",
+    "conversionRate": "نرخ پیشنهاد",
+    "applicationsByWeek": "درخواست‌ها در هر هفته",
+    "conversionFunnel": "نرخ تبدیل مراحل",
+    "timeInStage": "میانگین روزهای هر مرحله",
+    "noDataYet": "برای مشاهده آمار، چند درخواست ثبت کنید.",
+    "week": "هفته",
+    "count": "تعداد",
+    "stage": "مرحله",
+    "days": "روز",
+    "applications": "درخواست‌ها"
+  },
+
+  "listView": {
+    "company": "شرکت",
+    "role": "عنوان شغلی",
+    "status": "وضعیت",
+    "salary": "حقوق",
+    "appliedAt": "تاریخ درخواست",
+    "followUpAt": "پیگیری",
+    "updatedAt": "آخرین بروزرسانی",
+    "noResults": "هیچ درخواستی با این فیلترها یافت نشد.",
+    "rowsPerPage": "ردیف",
+    "page": "صفحه {current} از {total}",
+    "columns": "ستون‌ها",
+    "previous": "قبلی",
+    "next": "بعدی"
+  },
+
+  "viewToggle": {
+    "board": "تابلو",
+    "list": "لیست"
+  },
+
+  "login": {
+    "title": "خوش آمدید به جاب‌تِرک",
+    "subtitle": "برای پیگیری درخواست‌های شغلی خود وارد شوید",
+    "signInButton": "ورود با GitHub",
+    "signingIn": "در حال ورود…",
+    "privacyNote": "اطلاعات شما خصوصی است و فقط برای شما قابل دسترسی می‌باشد."
+  },
+
+  "offline": {
+    "title": "اتصال به اینترنت قطع است",
+    "subtitle": "جاب‌تِرک در حال حاضر به سرور دسترسی ندارد. اتصال خود را بررسی کرده و دوباره تلاش کنید.",
+    "tryAgain": "تلاش مجدد",
+    "goHome": "برگشت به خانه",
+    "cacheNote": "صفحاتی که قبلاً بارگذاری شده‌اند ممکن است از حافظه کَش در دسترس باشند."
+  },
+
+  "errors": {
+    "loadFailed": "بارگذاری درخواست‌ها ناموفق بود",
+    "saveFailed": "ذخیره‌سازی ناموفق بود",
+    "deleteFailed": "حذف ناموفق بود",
+    "unauthorized": "لطفاً برای ادامه وارد شوید"
+  }
+}
