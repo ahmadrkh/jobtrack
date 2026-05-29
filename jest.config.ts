@@ -7,7 +7,7 @@ const config: Config = {
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
   // Runs after the test framework is installed — sets up jest-dom matchers
-  setupFilesAfterFramework: ['<rootDir>/jest.setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
