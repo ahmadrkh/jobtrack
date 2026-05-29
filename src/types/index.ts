@@ -9,17 +9,18 @@ export type Status =
   | 'REJECTED'
 
 export interface Application {
-  id:        string
-  company:   string
-  role:      string
-  status:    Status
-  jobUrl:    string | null
-  location:  string | null
-  salary:    string | null
-  notes:     string | null
-  appliedAt: string | null
-  createdAt: string
-  updatedAt: string
+  id:          string
+  company:     string
+  role:        string
+  status:      Status
+  jobUrl:      string | null
+  location:    string | null
+  salary:      string | null
+  notes:       string | null
+  appliedAt:   string | null
+  followUpAt:  string | null   // ISO string; null = no reminder set
+  createdAt:   string
+  updatedAt:   string
 }
 
 // ── Event ─────────────────────────────────────────────────────────────────────
@@ -50,10 +51,10 @@ export const KANBAN_COLUMNS: KanbanColumn[] = [
   {
     id: 'WISHLIST',     label: 'Wishlist',
     color:       'bg-slate-100 dark:bg-slate-700',
-    headerColor: 'bg-slate-100 dark:bg-slate-700',
+    headerColor: 'bg-slate-100 dark:bg-slate-800',
     dotColor:    'bg-slate-400',
-    badgeColor:  'bg-slate-200 text-slate-600 dark:bg-slate-600 dark:text-slate-300',
-    columnBg:    'bg-slate-50 dark:bg-slate-800',
+    badgeColor:  'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+    columnBg:    'bg-slate-50 dark:bg-slate-900',
   },
   {
     id: 'APPLIED',      label: 'Applied',
