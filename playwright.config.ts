@@ -1,45 +1,71 @@
 import { defineConfig, devices } from '@playwright/test'
+import path from 'path'
 
-/**
- * Playwright E2E configuration.
- *
- * Runs against the production-like Next.js build (`next start`) to test
- * the full stack including server-side rendering and API routes.
- *
- * CI note: the GitHub Actions workflow starts the server with
- * `npm run build && npm run start` before running `npx playwright test`.
- */
+const AUTH_FILE = path.join(__dirname, 'e2e/.auth/user.json')
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-
-  reporter: [
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['list'],
-  ],
+  reporter: 'html',
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
-    trace:   'on-first-retry',
-    screenshot: 'only-on-failure',
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
   },
 
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile-safari', use: { ...devices['iPhone 14'] } },
+    // Auth setup — runs once, saves session to e2e/.auth/user.json
+    {
+      name: 'setup',
+      testMatch: '**/auth.setup.ts',
+    },
+
+    // Main authenticated tests
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
+      dependencies: ['setup'],
+    },
+
+    // Mobile viewport
+    {
+      name: 'mobile-safari',
+      use: {
+        ...devices['iPhone 13'],
+        storageState: AUTH_FILE,
+      },
+      dependencies: ['setup'],
+    },
+
+    // Unauthenticated tests (auth.spec.ts — redirect checks)
+    {
+      name: 'unauthenticated',
+      testMatch: '**/auth.spec.ts',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    // Accessibility
+    {
+      name: 'a11y',
+      testMatch: '**/accessibility.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
+      dependencies: ['setup'],
+    },
   ],
 
-  // Starts the dev server automatically when running locally.
-  // In CI, the server is started by the workflow before playwright runs.
-  webServer: process.env.CI
-    ? undefined
-    : {
-        command: 'npm run dev',
-        url:     'http://localhost:3000',
-        reuseExistingServer: true,
-        timeout: 120_000,
-      },
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
+  },
 })
