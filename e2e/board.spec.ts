@@ -5,29 +5,44 @@
 // so selectors are defined once and reused across test files.
 
 import { test, expect } from '@playwright/test'
-import { AUTH_FILE } from './auth.setup'
+
+// AUTH_FILE path — must match playwright.config.ts
+// NOT imported from auth.setup.ts (Playwright forbids spec→setup imports)
+const AUTH_FILE = 'e2e/.auth/user.json'
 
 // ── Page Object Model ─────────────────────────────────────────────────────────
 class BoardPage {
   constructor(private page: import('@playwright/test').Page) {}
 
-  async goto()               { await this.page.goto('/') }
-  addButton()                { return this.page.getByRole('button', { name: /add job/i }) }
-  searchInput()              { return this.page.getByPlaceholder(/search company/i) }
-  boardToggle()              { return this.page.getByRole('button', { name: /board/i }) }
-  listToggle()               { return this.page.getByRole('button', { name: /list/i }) }
-  columnHeader(name: string) { return this.page.getByText(name, { exact: true }).first() }
-  cardByCompany(name: string){ return this.page.getByText(name).first() }
+  async goto() {
+    await this.page.goto('/')
+    // Wait for the board to fully hydrate and TanStack Query to settle
+    await this.page.waitForLoadState('networkidle')
+  }
+
+  addButton()   { return this.page.getByRole('button', { name: /add job/i }) }
+  searchInput() { return this.page.getByPlaceholder(/search company/i) }
+  boardToggle() { return this.page.getByRole('button', { name: /board/i }) }
+  listToggle()  { return this.page.getByRole('button', { name: /list/i }) }
+
+  // Use contains-text (no exact) so "Wishlist (3)" still matches "Wishlist"
+  columnHeader(name: string) {
+    return this.page.getByText(name).first()
+  }
+  cardByCompany(name: string) { return this.page.getByText(name).first() }
 
   async addApplication(company: string, role: string) {
     await this.addButton().click()
     await this.page.getByLabel(/company/i).fill(company)
     await this.page.getByLabel(/role/i).fill(role)
     await this.page.getByRole('button', { name: /add application/i }).click()
+    // Wait for the dialog to close and optimistic update to appear
+    await this.page.waitForLoadState('networkidle')
   }
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
+// Override storageState using the local constant (not an import from auth.setup)
 test.use({ storageState: AUTH_FILE })
 
 test.describe('Kanban Board', () => {
@@ -72,10 +87,12 @@ test.describe('Kanban Board', () => {
     await board.goto()
 
     await board.listToggle().click()
+    await page.waitForLoadState('networkidle')
     // Table header should appear
     await expect(page.getByRole('columnheader', { name: /company/i })).toBeVisible()
 
     await board.boardToggle().click()
+    await page.waitForLoadState('networkidle')
     // Kanban columns should be back
     await expect(board.columnHeader('Applied')).toBeVisible()
   })
