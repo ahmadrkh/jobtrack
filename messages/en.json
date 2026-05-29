@@ -1,0 +1,162 @@
+{
+  "common": {
+    "appName": "JobTrack",
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "optional",
+    "noData": "No data yet"
+  },
+
+  "nav": {
+    "board": "Board",
+    "stats": "Stats"
+  },
+
+  "header": {
+    "addJob": "Add Job",
+    "export": "Export",
+    "exportAriaLabel": "Export CSV",
+    "signIn": "Sign in with GitHub",
+    "signOut": "Sign out",
+    "account": "Account"
+  },
+
+  "filter": {
+    "searchPlaceholder": "Search company or role…",
+    "clearSearch": "Clear search",
+    "allStatuses": "All",
+    "showing": "{filtered} of {total}"
+  },
+
+  "kanban": {
+    "emptyColumn": "No applications here yet",
+    "dragHint": "Drag to move",
+    "moveToLabel": "Move to…"
+  },
+
+  "jobCard": {
+    "appliedOn": "Applied {date}",
+    "followUpDue": "Follow-up due {date}",
+    "followUpOverdue": "Overdue since {date}",
+    "followUpSoon": "Follow up in {days}d",
+    "viewJob": "View posting",
+    "editJob": "Edit",
+    "deleteJob": "Delete",
+    "deleteConfirm": "Delete this application?",
+    "deleteDescription": "This will permanently remove the application and all its history.",
+    "salary": "Salary",
+    "location": "Location",
+    "notes": "Notes",
+    "showHistory": "Show history",
+    "hideHistory": "Hide history"
+  },
+
+  "addJobDialog": {
+    "titleAdd": "Add Application",
+    "titleEdit": "Edit Application",
+    "company": "Company",
+    "companyPlaceholder": "e.g. Acme Corp",
+    "role": "Role / Title",
+    "rolePlaceholder": "e.g. Software Engineer",
+    "status": "Status",
+    "jobUrl": "Job URL",
+    "jobUrlPlaceholder": "https://…",
+    "location": "Location",
+    "locationPlaceholder": "e.g. Remote, Tehran, Berlin",
+    "salary": "Salary / Range",
+    "salaryPlaceholder": "e.g. $120k–$140k",
+    "appliedAt": "Applied date",
+    "followUpAt": "Follow-up reminder",
+    "notes": "Notes",
+    "notesPlaceholder": "Recruiter name, impressions, next steps…",
+    "submitAdd": "Add Application",
+    "submitEdit": "Save Changes",
+    "submitting": "Saving…"
+  },
+
+  "status": {
+    "WISHLIST": "Wishlist",
+    "APPLIED": "Applied",
+    "PHONE_SCREEN": "Phone Screen",
+    "INTERVIEW": "Interview",
+    "OFFER": "Offer",
+    "REJECTED": "Rejected"
+  },
+
+  "events": {
+    "CREATED": "Application added",
+    "STATUS_CHANGE": "Status changed to {status}",
+    "NOTE": "Note",
+    "empty": "No history yet"
+  },
+
+  "stats": {
+    "pageTitle": "Stats",
+    "totalApplications": "Total Applications",
+    "activeApplications": "Active",
+    "offers": "Offers",
+    "conversionRate": "Offer Rate",
+    "applicationsByWeek": "Applications per Week",
+    "conversionFunnel": "Stage Conversion",
+    "timeInStage": "Avg. Days per Stage",
+    "noDataYet": "Add some applications to see your stats.",
+    "week": "Week",
+    "count": "Count",
+    "stage": "Stage",
+    "days": "Days",
+    "applications": "Applications"
+  },
+
+  "listView": {
+    "company": "Company",
+    "role": "Role",
+    "status": "Status",
+    "salary": "Salary",
+    "appliedAt": "Applied",
+    "followUpAt": "Follow-up",
+    "updatedAt": "Updated",
+    "noResults": "No applications match your filters.",
+    "rowsPerPage": "Rows",
+    "page": "Page {current} of {total}",
+    "columns": "Columns",
+    "previous": "Previous",
+    "next": "Next"
+  },
+
+  "viewToggle": {
+    "board": "Board",
+    "list": "List"
+  },
+
+  "login": {
+    "title": "Welcome to JobTrack",
+    "subtitle": "Sign in to start tracking your job applications",
+    "signInButton": "Sign in with GitHub",
+    "signingIn": "Signing in…",
+    "privacyNote": "Your data is private and only accessible to you."
+  },
+
+  "offline": {
+    "title": "You're offline",
+    "subtitle": "JobTrack can't reach the server right now. Check your connection and try again.",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "cacheNote": "Previously loaded pages may still be available from cache."
+  },
+
+  "errors": {
+    "loadFailed": "Failed to load applications",
+    "saveFailed": "Failed to save",
+    "deleteFailed": "Failed to delete",
+    "unauthorized": "Please sign in to continue"
+  }
+}
