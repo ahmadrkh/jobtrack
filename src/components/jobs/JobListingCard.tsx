@@ -5,7 +5,7 @@ import { ExternalLink, MapPin, Briefcase, CheckCircle2, Loader2, DollarSign } fr
 import { Button }       from '@/components/ui/button'
 import { Badge }        from '@/components/ui/badge'
 import { cn }           from '@/lib/utils'
-import type { JobListing } from '@/app/api/jobs/route'
+import type { JobListing } from '@/types/jobs'
 
 interface Props {
   job:        JobListing

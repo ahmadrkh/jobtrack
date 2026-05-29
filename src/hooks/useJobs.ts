@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { JobListing } from '@/app/api/jobs/route'
+import type { JobListing } from '@/types/jobs'
 import type { Application } from '@/types'
 
 // ── Fetch job listings ────────────────────────────────────────────────────────
