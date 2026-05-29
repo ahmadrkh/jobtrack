@@ -1,178 +1,135 @@
 'use client'
 
-// DndContext  — the root provider for all drag-and-drop
-// DragOverlay — renders the floating "ghost" card while dragging
-// closestCorners — the collision detection algorithm: when you drag
-//   a card, dnd-kit checks which droppable corner is closest to the
-//   dragged card's center. This works better than the default
-//   "intersect" strategy for kanban-style layouts.
+// KanbanBoard — orchestrates drag-and-drop across columns.
+//
+// Architecture notes:
+// - DndContext lives here (top of the dnd tree)
+// - useMoveApplication from TanStack Query handles optimistic status updates
+// - SortableContext lives inside each KanbanColumn
+// - Active drag item is rendered via DragOverlay for smooth 60fps previews
+// - Data is fetched via useApplications (TanStack Query) — no prop drilling
+
 import {
   DndContext,
   DragOverlay,
-  DragStartEvent,
-  DragEndEvent,
-  closestCorners,
   PointerSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+  closestCenter,
 } from '@dnd-kit/core'
-import { useState } from 'react'
-import { Application } from '@/types'
-import { KANBAN_COLUMNS } from '@/types'
+import { useState, useMemo } from 'react'
+import { Loader2 } from 'lucide-react'
 import { KanbanColumn } from './KanbanColumn'
 import { JobCard } from './JobCard'
-import { ApplicationForm } from '@/components/forms/ApplicationForm'
+import { FilterBar } from '@/components/layout/FilterBar'
+import { useApplications, useMoveApplication } from '@/hooks/useApplications'
+import { KANBAN_COLUMNS } from '@/types'
+import type { Application, Status } from '@/types'
 
-interface KanbanBoardProps {
-  applications: Application[]
-  // The board doesn't manage its own data — it receives it from the
-  // page and calls these callbacks when something changes.
-  // This is called "lifting state up" — a core React pattern.
-  // The page owns the data; the board just displays and mutates it.
-  onChange: (updated: Application[]) => void
-  onDelete: (id: string) => void
-}
+export function KanbanBoard() {
+  const { data: applications = [], isLoading, isError } = useApplications()
+  const moveApp = useMoveApplication()
 
-export function KanbanBoard({ applications, onChange, onDelete }: KanbanBoardProps) {
-  // activeId tracks which card is currently being dragged.
-  // We need this to render the DragOverlay (the floating ghost card).
-  const [activeId, setActiveId] = useState<string | null>(null)
-  // editingApp holds the card currently being edited.
-  // null means the edit modal is closed.
-  const [editingApp, setEditingApp] = useState<Application | null>(null)
+  const [activeApp, setActiveApp]     = useState<Application | null>(null)
+  const [search, setSearch]           = useState('')
+  const [statusFilter, setStatusFilter] = useState<Status | 'ALL'>('ALL')
 
-  // Sensors define HOW drag is initiated. PointerSensor handles both
-  // mouse and touch. activationConstraint.distance means: "don't start
-  // dragging until the pointer has moved 8px" — this prevents accidental
-  // drags when the user just clicks on a card.
+  // Sensors — require 8px pointer movement before starting drag.
+  // Without this threshold, clicks on buttons inside cards would
+  // accidentally initiate drags.
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
-    })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
-  // Find the application object that matches activeId so we can
-  // render it inside DragOverlay.
-  const activeApplication = activeId
-    ? applications.find(a => a.id === activeId) ?? null
-    : null
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase()
+    return applications.filter(a => {
+      const matchesSearch =
+        !q ||
+        a.company.toLowerCase().includes(q) ||
+        a.role.toLowerCase().includes(q) ||
+        (a.location ?? '').toLowerCase().includes(q)
+      const matchesStatus = statusFilter === 'ALL' || a.status === statusFilter
+      return matchesSearch && matchesStatus
+    })
+  }, [applications, search, statusFilter])
 
-  // Group applications by status for rendering into columns.
-  // This is a derived value — we compute it on every render from
-  // the `applications` array rather than storing it in state.
-  // Rule of thumb: never store in state what you can derive from state.
-  function getColumnApplications(columnId: string) {
-    return applications.filter(a => a.status === columnId)
+  function handleDragStart({ active }: DragStartEvent) {
+    const app = applications.find(a => a.id === active.id)
+    setActiveApp(app ?? null)
   }
 
-  function handleDragStart(event: DragStartEvent) {
-    // event.active.id is the id we passed to useSortable({ id: ... })
-    // in JobCard. We save it so DragOverlay knows what to render.
-    setActiveId(String(event.active.id))
-  }
-
-  async function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
-    setActiveId(null) // Clear the overlay regardless of outcome
-
-    // `over` is null if the card was dropped outside any droppable zone
+  function handleDragEnd({ active, over }: DragEndEvent) {
+    setActiveApp(null)
     if (!over) return
 
-    const cardId = String(active.id)
-    const overId  = String(over.id)
+    const newStatus = over.id as Status
+    const app = applications.find(a => a.id === active.id)
+    if (!app || app.status === newStatus) return
 
-    // THE BUG FIX:
-    // over.id can be EITHER a column ID (e.g. "APPLIED") OR a card ID
-    // (e.g. "clxyz123") depending on what the pointer is hovering over
-    // when the user releases the mouse.
-    //
-    // - Dropped on empty column space → over.id = column ID  ✓
-    // - Dropped on top of another card → over.id = that card's ID  ✗
-    //   In this case we need to look up which column the target card
-    //   lives in and use THAT as the new status.
-    //
-    // Without this fix, the card's status gets set to a random cuid()
-    // string, no column matches it, and the card silently disappears.
-    const isColumnId = KANBAN_COLUMNS.some(col => col.id === overId)
-    const newStatus  = isColumnId
-      ? overId
-      : (applications.find(a => a.id === overId)?.status ?? overId)
+    // Optimistic update handled inside useMoveApplication
+    moveApp.mutate({ id: app.id, status: newStatus })
+  }
 
-    // Find the card that was dragged
-    const card = applications.find(a => a.id === cardId)
-    if (!card) return
-
-    // If it was dropped in the same column it started in, do nothing
-    if (card.status === newStatus) return
-
-    // OPTIMISTIC UPDATE:
-    // 1. Immediately update local state so the UI feels instant
-    // 2. Fire the API call in the background
-    // 3. If the API fails, we could roll back (kept simple here)
-    const updated = applications.map(a =>
-      a.id === cardId ? { ...a, status: newStatus as Application['status'] } : a
+  if (isLoading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
     )
-    onChange(updated) // Tell the parent page about the new state
+  }
 
-    // Now persist the change to the database via our PATCH route
-    await fetch(`/api/applications/${cardId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus }),
-    })
-    // Note: in a production app you'd catch errors here and roll back
-    // the optimistic update if the fetch fails.
+  if (isError) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center text-destructive text-sm">
+        Failed to load applications. Please refresh.
+      </div>
+    )
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex gap-4 px-6 pb-6 overflow-x-auto">
-        {KANBAN_COLUMNS.map(column => (
-          <KanbanColumn
-            key={column.id}
-            column={column}
-            applications={getColumnApplications(column.id)}
-            onDelete={onDelete}
-            onEdit={setEditingApp}
-          />
-        ))}
-      </div>
-
-      {/* DragOverlay renders outside the normal DOM flow (via a portal),
-          so it's not clipped by overflow:hidden on the columns.
-          It shows a copy of the card while dragging.
-          dropAnimation gives the card a smooth "snap into place" when dropped. */}
-      <DragOverlay dropAnimation={{ duration: 150, easing: 'ease' }}>
-        {activeApplication ? (
-          <div className="rotate-2 scale-105 opacity-90">
-            <JobCard
-              application={activeApplication}
-              onDelete={() => {}}  // No-op: can't delete from the overlay
-              onEdit={() => {}}    // No-op: can't edit from the overlay
-            />
-          </div>
-        ) : null}
-      </DragOverlay>
-
-      {/* Edit modal — rendered outside the column list so it's not
-          clipped by overflow:hidden. Reuses ApplicationForm with
-          editApp prop to switch it into edit mode. */}
-      <ApplicationForm
-        open={editingApp !== null}
-        onOpenChange={(open) => { if (!open) setEditingApp(null) }}
-        editApp={editingApp ?? undefined}
-        onSuccess={(updated) => {
-          // Swap the old card with the updated one in the applications array,
-          // then tell the parent page about the new state.
-          onChange(applications.map(a => a.id === updated.id ? updated : a))
-          setEditingApp(null)
-        }}
+    <div className="flex flex-col h-[calc(100vh-56px)]">
+      {/* Filter bar */}
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        totalCount={applications.length}
+        filteredCount={filtered.length}
       />
-    </DndContext>
+
+      {/* Board — horizontally scrollable, snaps on mobile */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex-1 overflow-x-auto overflow-y-hidden kanban-board-scroll">
+          <div className="flex gap-4 p-4 h-full min-w-max">
+            {KANBAN_COLUMNS.map(col => (
+              <KanbanColumn
+                key={col.id}
+                column={col}
+                applications={filtered.filter(a => a.status === col.id)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Drag overlay — renders the card being dragged at full opacity
+            while the original fades out (handled by isDragging in JobCard) */}
+        <DragOverlay>
+          {activeApp && (
+            <div className="rotate-2 shadow-2xl">
+              <JobCard application={activeApp} />
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
+    </div>
   )
 }
