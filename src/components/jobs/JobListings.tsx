@@ -6,7 +6,7 @@ import { Input }  from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useJobs, useSaveJob, REMOTIVE_CATEGORIES } from '@/hooks/useJobs'
 import { JobListingCard } from './JobListingCard'
-import type { JobListing } from '@/app/api/jobs/route'
+import type { JobListing } from '@/types/jobs'
 import { cn } from '@/lib/utils'
 
 export function JobListings() {
