@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       logo:        j.company_logo_url || null,
     }))
 
-    return NextResponse.json({ jobs, total: data.job-count ?? jobs.length })
+    return NextResponse.json({ jobs, total: data['job-count'] ?? jobs.length })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch jobs' }, { status: 500 })
   }
