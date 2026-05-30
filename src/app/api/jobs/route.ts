@@ -1,3 +1,4 @@
+import type { JobListing } from '@/types/jobs'
 // GET /api/jobs?q=react&category=software-dev&limit=20
 //
 // Proxies the Remotive public API (no API key required).
