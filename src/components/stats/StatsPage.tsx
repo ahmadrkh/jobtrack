@@ -33,13 +33,22 @@ function buildWeeklyData(apps: Application[]) {
     }))
 }
 
+const FUNNEL_LABELS: Partial<Record<Status, string>> = {
+  APPLIED:      'Applied',
+  PHONE_SCREEN: 'Phone Screen',
+  INTERVIEW:    'Interview',
+  OFFER:        'Offer',
+}
+
 function buildFunnelData(apps: Application[]) {
   const ORDER: Status[] = ['APPLIED', 'PHONE_SCREEN', 'INTERVIEW', 'OFFER']
-  const counts = Object.fromEntries(
-    ORDER.map(s => [s, apps.filter(a => a.status === s || isAfterStage(a.status, s)).length])
-  ) as Record<Status, number>
+  const totalApplied = apps.filter(a => a.status !== 'WISHLIST').length
 
-  return ORDER.map(status => ({ status, count: counts[status] ?? 0 }))
+  return ORDER.map(status => {
+    const reached = apps.filter(a => a.status === status || isAfterStage(a.status, status)).length
+    const pct     = totalApplied > 0 ? Math.round((reached / totalApplied) * 100) : 0
+    return { status, label: FUNNEL_LABELS[status] ?? status, count: reached, reached, pct }
+  })
 }
 
 const STAGE_ORDER: Status[] = ['WISHLIST', 'APPLIED', 'PHONE_SCREEN', 'INTERVIEW', 'OFFER', 'REJECTED']
