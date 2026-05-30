@@ -22,6 +22,10 @@ const config: Config = {
       screens: { '2xl': '1400px' },
     },
     extend: {
+      fontFamily: {
+        // Persian (fa) locale only — wired in src/app/[locale]/layout.tsx
+        samim: ['var(--font-samim)', 'Tahoma', 'sans-serif'],
+      },
       colors: {
         border:     'hsl(var(--border))',
         input:      'hsl(var(--input))',
