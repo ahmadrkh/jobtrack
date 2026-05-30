@@ -56,16 +56,26 @@ function isAfterStage(current: Status, stage: Status) {
   return STAGE_ORDER.indexOf(current) >= STAGE_ORDER.indexOf(stage)
 }
 
+const AVG_LABELS: Partial<Record<Status, string>> = {
+  APPLIED:      'Applied',
+  PHONE_SCREEN: 'Phone Screen',
+  INTERVIEW:    'Interview',
+  OFFER:        'Offer',
+}
+
 function buildAvgDaysData(apps: Application[]) {
   const stages: Status[] = ['APPLIED', 'PHONE_SCREEN', 'INTERVIEW', 'OFFER']
   return stages.map(status => {
     const inStage = apps.filter(a => a.status === status && a.appliedAt && a.updatedAt)
-    if (!inStage.length) return { status, days: 0 }
-    const avg = inStage.reduce((sum, a) => {
-      const diff = (new Date(a.updatedAt).getTime() - new Date(a.appliedAt!).getTime()) / 86400000
-      return sum + Math.abs(diff)
-    }, 0) / inStage.length
-    return { status, days: Math.round(avg) }
+    const count   = inStage.length
+    if (!count) return { status, label: AVG_LABELS[status] ?? status, avgDays: 0, count: 0 }
+    const avgDays = Math.round(
+      inStage.reduce((sum, a) => {
+        const diff = (new Date(a.updatedAt).getTime() - new Date(a.appliedAt!).getTime()) / 86400000
+        return sum + Math.abs(diff)
+      }, 0) / count
+    )
+    return { status, label: AVG_LABELS[status] ?? status, avgDays, count }
   })
 }
 
