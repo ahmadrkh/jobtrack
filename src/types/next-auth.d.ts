@@ -11,3 +11,12 @@ declare module 'next-auth' {
     } & DefaultSession['user']
   }
 }
+
+// With the JWT session strategy, the user id is carried on the token (set in the
+// jwt callback) and read back in the session callback. Declare it so both sides
+// are type-safe.
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string
+  }
+}

@@ -40,6 +40,8 @@ model User {
   id            String        @id @default(cuid())
   name          String?
   email         String?       @unique
+  username      String?       @unique   // chosen at email/password sign-up; lets users log in by handle
+  password      String?                 // bcrypt hash. Null for OAuth-only users (GitHub/Google/demo)
   emailVerified DateTime?
   image         String?
   resumeUrl     String?       // Vercel Blob URL of uploaded résumé PDF

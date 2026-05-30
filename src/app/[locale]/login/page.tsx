@@ -1,12 +1,12 @@
-import { LoginButton } from './LoginButton'
-import { Briefcase }   from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import { AuthPanel }        from './AuthPanel'
+import { Briefcase }        from 'lucide-react'
+import { getTranslations }  from 'next-intl/server'
 
 export default async function LoginPage() {
   const t = await getTranslations('login')
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-background px-4">
+    <main className="min-h-screen flex items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-sm space-y-8 text-center">
         {/* Logo */}
         <div className="flex flex-col items-center gap-3">
@@ -17,8 +17,8 @@ export default async function LoginPage() {
           <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
         </div>
 
-        {/* Sign-in button */}
-        <LoginButton label={t('signInButton')} signingInLabel={t('signingIn')} />
+        {/* GitHub / Google / email+username / demo */}
+        <AuthPanel />
 
         {/* Privacy note */}
         <p className="text-xs text-muted-foreground px-4">{t('privacyNote')}</p>

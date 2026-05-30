@@ -139,9 +139,22 @@
 
   "login": {
     "title": "Welcome to JobTrack",
-    "subtitle": "Sign in to start tracking your job applications",
-    "signInButton": "Sign in with GitHub",
-    "signingIn": "Signing in…",
+    "subtitle": "Sign in or create an account to track your job applications",
+    "continueGithub": "Continue with GitHub",
+    "continueGoogle": "Continue with Google",
+    "or": "or",
+    "email": "Email",
+    "username": "Username",
+    "emailOrUsername": "Email or username",
+    "password": "Password",
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "tryDemo": "Try the live demo — no sign-up",
+    "invalidCredentials": "Incorrect email/username or password.",
+    "registerFailed": "Couldn't create your account. Please try again.",
+    "somethingWrong": "Something went wrong. Please try again.",
     "privacyNote": "Your data is private and only accessible to you."
   },
 
