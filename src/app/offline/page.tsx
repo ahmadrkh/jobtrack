@@ -1,7 +1,6 @@
-'use client'
-
 import Link from 'next/link'
 import { WifiOff, Briefcase } from 'lucide-react'
+import { ReloadButton } from './ReloadButton'
 
 export const metadata = {
   title: 'Offline',
@@ -22,12 +21,7 @@ export default function OfflinePage() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          onClick={() => window.location.reload()}
-          className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
-          Try again
-        </button>
+        <ReloadButton />
         <Link
           href="/"
           className="inline-flex items-center justify-center rounded-md border border-input bg-background px-5 py-2.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
