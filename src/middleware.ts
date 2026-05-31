@@ -44,5 +44,9 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Exclude /api: next-intl must NOT localize API routes, or it redirects
+  // /api/applications → /en/api/applications, which doesn't exist (404).
+  // API routes guard themselves with requireSession(), so they don't need
+  // the auth middleware here either.
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }
